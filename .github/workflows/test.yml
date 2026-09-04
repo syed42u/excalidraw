@@ -34,7 +34,7 @@ jobs:
 
       - name: Build Tauri app
         working-directory: excalidraw-app
-        run: yarn tauri build
+        run: cargo tauri build
 
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
