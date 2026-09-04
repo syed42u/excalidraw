@@ -1,19 +1,40 @@
-name: Tests
+name: Build Excalidraw Windows
 
 on:
+  workflow_dispatch:
   push:
     branches: master
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  build-windows:
+    runs-on: windows-latest
+
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@v4
         with:
-          node-version: 20.x
-      - name: Install and test
-        run: |
-          yarn install
-          yarn test:app
+          node-version: 20
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build Tauri app
+        working-directory: excalidraw-app
+        run: yarn tauri build
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: excalidraw-windows
+          path: |
+            excalidraw-app/src-tauri/target/release/bundle/nsis/*.exe
+            excalidraw-app/src-tauri/target/release/bundle/msi/*.msi
