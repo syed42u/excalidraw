@@ -32,8 +32,12 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Build Tauri app
+      - name: Build frontend
         working-directory: excalidraw-app
+        run: yarn build
+
+      - name: Build Tauri app
+        working-directory: excalidraw-app/src-tauri
         run: cargo tauri build
 
       - name: Upload Windows installer
